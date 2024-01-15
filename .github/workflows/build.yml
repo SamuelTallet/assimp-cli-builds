@@ -12,6 +12,11 @@ jobs:
       matrix:
         # TODO: macos-latest
         os: [windows-latest]
+        include:
+          - os: windows-latest
+            os_and_arch: win-x64
+            archive_type: zip
+            archive_ext: zip
 
     steps:
     - name: Clone Assimp
@@ -40,12 +45,18 @@ jobs:
         format: YYYY-MM-DD
 
     - name: Create Tag
-      run: git tag ${{ steps.date.outputs.time }} && git push origin --tags
+      run: git tag ${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }} && git push origin --tags
       working-directory: ./weekly
+
+    - name: Archive Release
+      uses: thedoctor0/zip-release@0.7.6
+      with:
+        path: assimp/build/bin/Release/assimp*
+        type: ${{ matrix.archive_type }}
+        filename: assimp-cli-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
 
     - name: Release Tag
       uses: softprops/action-gh-release@v1
       with:
-        prerelease: true
-        files: ./assimp/build/bin/Release/assimp*
-        tag_name: ${{ steps.date.outputs.time }}
+        files: assimp-cli-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
+        tag_name: ${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }}
