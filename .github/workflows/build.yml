@@ -14,7 +14,7 @@ jobs:
         os: [windows-latest]
 
     steps:
-    - name: Set Current Date
+    - name: Get Current Date
       id: date
       uses: Kaven-Universe/github-action-current-date-time@v1
       with:
@@ -28,7 +28,7 @@ jobs:
         ref: master
         submodules: true
 
-    - name: Gen. Build Files
+    - name: Configure Build
       run: cmake -S ./assimp -B ./assimp/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DASSIMP_BUILD_ASSIMP_TOOLS=ON -DASSIMP_BUILD_ASSIMP_VIEW=OFF -DASSIMP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF -DASSIMP_INSTALL=OFF -DASSIMP_INSTALL_PDB=OFF
 
     - name: Build Release
@@ -39,10 +39,11 @@ jobs:
       with:
         path: weekly
 
-    - name: Create My Tag
+    - name: Create Tag
       run: git tag ${{ steps.date.outputs.time }} && git push origin --tags
+      working-directory: ./weekly
 
-    - name: Release My Tag
+    - name: Release Tag
       uses: softprops/action-gh-release@v1
       with:
         prerelease: true
