@@ -14,12 +14,6 @@ jobs:
         os: [windows-latest]
 
     steps:
-    - name: Get Current Date
-      id: date
-      uses: Kaven-Universe/github-action-current-date-time@v1
-      with:
-        format: YYYY-MM-DD
-
     - name: Clone Assimp
       uses: actions/checkout@v4
       with:
@@ -38,6 +32,12 @@ jobs:
       uses: actions/checkout@v4
       with:
         path: weekly
+
+    - name: Get Current Date
+      id: date
+      uses: Kaven-Universe/github-action-current-date-time@v1
+      with:
+        format: YYYY-MM-DD
 
     - name: Create Tag
       run: git tag ${{ steps.date.outputs.time }} && git push origin --tags
