@@ -24,8 +24,11 @@ jobs:
     - name: Configure CMake
       run: cmake -S . -B ./build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DASSIMP_BUILD_ASSIMP_TOOLS=ON -DASSIMP_BUILD_ASSIMP_VIEW=OFF -DASSIMP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF -DASSIMP_INSTALL=OFF -DASSIMP_INSTALL_PDB=OFF
 
-    - name: Build w/ MSBuild
-      run: tree ./build
+    - name: List build dir.
+      run: dir ./build
+
+    - name: Build w/ CMake
+      run: cmake --build ./build --config Release
 
     - name: Upload Binary
       uses: actions/upload-artifact@v4
