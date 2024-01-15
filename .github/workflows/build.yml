@@ -23,25 +23,28 @@ jobs:
     - name: Clone Assimp
       uses: actions/checkout@v4
       with:
+        path: assimp
         repository: assimp/assimp
         ref: master
         submodules: true
 
-    - name: Configure CMake
+    - name: Gen. Build Files
       run: cmake -S . -B ./build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DASSIMP_BUILD_ASSIMP_TOOLS=ON -DASSIMP_BUILD_ASSIMP_VIEW=OFF -DASSIMP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF -DASSIMP_INSTALL=OFF -DASSIMP_INSTALL_PDB=OFF
 
-    - name: Build With CMake
+    - name: Build Release
       run: cmake --build ./build --config Release
 
-    - name: Create Tag
-      uses: cardinalby/git-tag-action@master
-      env:
-        TAG: steps.date.time
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Back To My Repo
+      uses: actions/checkout@v4
+      with:
+        path: weekly
 
-    - name: Release Tag
+    - name: Create My Tag
+      run: git tag ${{ steps.date.outputs.time }} && git push origin --tags
+
+    - name: Release My Tag
       uses: softprops/action-gh-release@v1
       with:
         prerelease: true
-        files: ./build/bin/Release/assimp*
-        tag_name: steps.date.time
+        files: ../assimp/build/bin/Release/assimp*
+        tag_name: ${{ steps.date.outputs.time }}
