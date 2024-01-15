@@ -1,1 +1,3 @@
-# Assimp-CLI-Weekly-Builds
+# Assimp CLI Weekly Builds
+
+Work in progress.
