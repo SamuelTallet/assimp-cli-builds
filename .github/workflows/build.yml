@@ -19,6 +19,12 @@ jobs:
             archive_ext: zip
 
     steps:
+    - name: Get Current Date
+      id: date
+      uses: Kaven-Universe/github-action-current-date-time@v1
+      with:
+        format: YYYY-MM-DD
+
     - name: Clone Assimp
       uses: actions/checkout@v4
       with:
@@ -33,21 +39,6 @@ jobs:
     - name: Build Release
       run: cmake --build ./assimp/build --config Release
 
-    - name: Back To My Repo
-      uses: actions/checkout@v4
-      with:
-        path: weekly
-
-    - name: Get Current Date
-      id: date
-      uses: Kaven-Universe/github-action-current-date-time@v1
-      with:
-        format: YYYY-MM-DD
-
-    - name: Create Tag
-      run: git tag ${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }} && git push origin --tags
-      working-directory: ./weekly
-
     - name: Archive Release
       uses: thedoctor0/zip-release@0.7.6
       with:
@@ -55,8 +46,18 @@ jobs:
         type: ${{ matrix.archive_type }}
         filename: assimp-cli-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
 
+    - name: Back To My Repo
+      uses: actions/checkout@v4
+      with:
+        path: weekly
+
+    - name: Create Tag
+      run: git tag ${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }} && git push origin --tags
+      working-directory: ./weekly
+
     - name: Release Tag
       uses: softprops/action-gh-release@v1
       with:
+        body: This is an automatic build of the Assimp CLI tool.
         files: assimp-cli-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
         tag_name: ${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }}
