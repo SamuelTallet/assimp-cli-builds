@@ -50,7 +50,7 @@ jobs:
     - name: Archive Release
       uses: thedoctor0/zip-release@0.7.6
       with:
-        path: assimp/build/bin/Release/assimp*
+        path: assimp/build/bin
         type: ${{ matrix.archive_type }}
         filename: assimp-cli-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
 
