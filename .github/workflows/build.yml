@@ -1,9 +1,10 @@
 name: Build Assimp CLI
 
 on:
-  schedule:
-    - cron: '0 4 * * 3' # Every wednesday at 04:00
-  workflow_dispatch: # On demand
+  push:
+    tags:
+      - '*'
+  workflow_dispatch: # On demand.
 
 jobs:
   build:
@@ -31,41 +32,31 @@ jobs:
     - name: Clone Assimp
       uses: actions/checkout@v4
       with:
-        path: assimp
         repository: assimp/assimp
         ref: master
         submodules: true
 
     - name: Configure Build
       if: matrix.os == 'windows-latest'
-      run: cmake -S ./assimp -B ./assimp/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DASSIMP_BUILD_ASSIMP_TOOLS=ON -DASSIMP_BUILD_ASSIMP_VIEW=OFF -DASSIMP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF -DASSIMP_INSTALL=OFF -DASSIMP_INSTALL_PDB=OFF
+      run: cmake -S . -B ./build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DASSIMP_BUILD_ASSIMP_TOOLS=ON -DASSIMP_BUILD_ASSIMP_VIEW=OFF -DASSIMP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF -DASSIMP_INSTALL=OFF -DASSIMP_INSTALL_PDB=OFF
 
     - name: Configure Build
       if: matrix.os == 'macos-latest'
-      run: cmake -S ./assimp -B ./assimp/build -G "Unix Makefiles" -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DASSIMP_BUILD_ASSIMP_TOOLS=ON -DASSIMP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF -DASSIMP_INSTALL=OFF -DASSIMP_INSTALL_PDB=OFF
+      run: cmake -S . -B ./build -G "Unix Makefiles" -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DASSIMP_BUILD_ASSIMP_TOOLS=ON -DASSIMP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF -DASSIMP_INSTALL=OFF -DASSIMP_INSTALL_PDB=OFF
 
     - name: Build Release
-      run: cmake --build ./assimp/build --config Release
+      run: cmake --build ./build --config Release
 
     - name: Archive Release
       uses: thedoctor0/zip-release@0.7.6
       with:
-        path: assimp/build/bin
+        path: build/bin
         type: ${{ matrix.archive_type }}
         filename: assimp-cli-${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
 
-    - name: Back To My Repo
-      uses: actions/checkout@v4
-      with:
-        path: weekly
-
-    - name: Create Tag
-      run: git tag ${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }} && git push origin --tags
-      working-directory: ./weekly
-
-    - name: Release Tag
+    - name: Release With Tag
       uses: softprops/action-gh-release@v1
       with:
         body: This is an automatic build of the Assimp CLI tool.
         files: assimp-cli-${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
-        tag_name: ${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }}
+        tag_name: ${{ steps.date.outputs.time }} # This tag has just been created by the "Tag With Date" action.

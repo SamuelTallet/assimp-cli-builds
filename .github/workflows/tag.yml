@@ -1,0 +1,22 @@
+name: Tag With Date
+
+on:
+  schedule:
+    - cron: '0 4 * * 3' # Every wednesday at 04:00.
+  workflow_dispatch: # On demand.
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Current Date
+      id: date
+      uses: Kaven-Universe/github-action-current-date-time@v1
+      with:
+        format: YYYY-MM-DD
+
+    - name: Checkout My Repo
+      uses: actions/checkout@v4
+
+    - name: Create-Push Tag
+      run: git tag ${{ steps.date.outputs.time }} && git push origin --tags
