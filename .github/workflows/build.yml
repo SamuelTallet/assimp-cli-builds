@@ -1,9 +1,8 @@
 name: Build Assimp CLI
 
 on:
-  push:
-    tags:
-      - '*'
+  schedule:
+    - cron: '10 4 * * 3' # Every wednesday at 04:10.
   workflow_dispatch: # On demand.
 
 jobs:
@@ -59,4 +58,4 @@ jobs:
       with:
         body: This is an automatic build of the Assimp CLI tool.
         files: assimp-cli-${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
-        tag_name: ${{ steps.date.outputs.time }} # This tag has just been created by the "Tag With Date" action.
+        tag_name: ${{ steps.date.outputs.time }} # This tag was previously created by the "Tag With Date" action.
