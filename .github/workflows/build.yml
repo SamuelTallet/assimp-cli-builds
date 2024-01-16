@@ -52,7 +52,7 @@ jobs:
       with:
         path: assimp/build/bin
         type: ${{ matrix.archive_type }}
-        filename: assimp-cli-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
+        filename: assimp-cli-${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
 
     - name: Back To My Repo
       uses: actions/checkout@v4
@@ -67,5 +67,5 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         body: This is an automatic build of the Assimp CLI tool.
-        files: assimp-cli-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
+        files: assimp-cli-${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }}.${{ matrix.archive_ext }}
         tag_name: ${{ steps.date.outputs.time }}-${{ matrix.os_and_arch }}
