@@ -4,4 +4,4 @@ The [Assimp](https://github.com/assimp/assimp) command-line (CLI) tool allows yo
 
 Every week, you'll find up-to-date Windows and macOS binaries of the Assimp CLI tool in the [Releases](https://github.com/SamuelTallet/Assimp-CLI-Weekly-Builds/releases) page.
 
-But be aware: these binaries are built from the ever-changing Assimp repository `master` branch and thus they may be unstable.
+Warning, these binaries are built from the ever-changing Assimp repository `master` branch: they may be unstable.
